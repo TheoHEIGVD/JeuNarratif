@@ -1,29 +1,18 @@
 <template>
+  <!-- Formulaire de connexion -->
   <div class="login-container">
     <div class="login-card">
       <h2>Connexion</h2>
-      
+
       <form @submit.prevent="handleLogin" class="login-form">
         <div class="form-group">
           <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            v-model="email"
-            required
-            placeholder="Votre email"
-          />
+          <input type="email" id="email" v-model="email" required placeholder="Votre email" />
         </div>
 
         <div class="form-group">
           <label for="password">Mot de passe</label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            required
-            placeholder="Votre mot de passe"
-          />
+          <input type="password" id="password" v-model="password" required placeholder="Votre mot de passe" />
         </div>
 
         <div v-if="error" class="error-message">
@@ -35,7 +24,7 @@
         </button>
 
         <p class="register-link">
-          Pas encore de compte ? 
+          Pas encore de compte ?
           <router-link to="/register">S'inscrire</router-link>
         </p>
       </form>
@@ -44,6 +33,8 @@
 </template>
 
 <script setup>
+
+// Imports nécessaires
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -51,15 +42,17 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
+// Variables réactives
 const email = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
 
+// Gestion de la connexion avec try/catch
 const handleLogin = async () => {
   loading.value = true
   error.value = ''
-  
+
   try {
     await authStore.login({
       email: email.value,
@@ -152,4 +145,4 @@ button:disabled {
 .register-link a:hover {
   text-decoration: underline;
 }
-</style> 
+</style>

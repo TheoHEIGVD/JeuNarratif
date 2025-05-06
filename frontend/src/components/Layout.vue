@@ -1,8 +1,13 @@
 <template>
+  <!-- Container principal -->
   <div class="layout">
+    <!-- Barre de navigation -->
     <NavBar />
+    
+    <!-- Contenu principal avec transitions -->
     <main class="main-content">
       <router-view v-slot="{ Component }">
+        <!-- Animation de transition entre les routes -->
         <transition name="fade" mode="out-in">
           <component :is="Component" />
         </transition>
@@ -12,7 +17,7 @@
 </template>
 
 <script setup>
-import NavBar from './NavBar.vue';
+import NavBar from './NavBar.vue';  // Import du composant de navigation
 </script>
 
 <style scoped>
@@ -22,6 +27,7 @@ import NavBar from './NavBar.vue';
   flex-direction: column;
 }
 
+/* Zone de contenu principale */
 .main-content {
   flex: 1;
   padding: 2rem;
@@ -39,4 +45,4 @@ import NavBar from './NavBar.vue';
 .fade-leave-to {
   opacity: 0;
 }
-</style> 
+</style>

@@ -1,4 +1,5 @@
 <template>
+    <!-- Formulaire d'inscription -->
   <div class="auth-form">
     <h2>Inscription</h2>
     
@@ -71,6 +72,7 @@ const authStore = useAuthStore();
 const loading = computed(() => authStore.loading);
 const error = computed(() => authStore.error);
 
+// État du formulaire avec reactive
 const form = reactive({
   name: '',
   email: '',
@@ -78,6 +80,7 @@ const form = reactive({
   password_confirmation: ''
 });
 
+// Gestion de l'inscription
 const handleSubmit = async () => {
   try {
     await authStore.register(form);

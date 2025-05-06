@@ -1,17 +1,22 @@
 <script setup>
 import { ref } from 'vue'
 
+// Définition des props
 defineProps({
   msg: String,
 })
 
+// État réactif
 const count = ref(0)
 </script>
 
 <template>
+    <!-- Affichage du message passé en prop -->
   <h1>{{ msg }}</h1>
 
+    <!-- Carte interactive -->
   <div class="card">
+        <!-- Bouton avec compteur -->
     <button type="button" @click="count++">count is {{ count }}</button>
     <p>
       Edit
@@ -19,6 +24,7 @@ const count = ref(0)
     </p>
   </div>
 
+    <!-- Liens vers la documentation -->
   <p>
     Check out
     <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"

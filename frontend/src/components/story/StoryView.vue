@@ -1,60 +1,51 @@
 <template>
+
+  <!-- Container principal -->
   <div class="story-container">
+    <!-- 1. Gestion des états -->
+    <!-- Affichage des erreurs -->
     <div v-if="gameStore.hasError" class="error-message">
       {{ gameStore.error }}
       <button @click="gameStore.startGame()" class="retry-button">Réessayer</button>
     </div>
-
+    <!-- État de chargement -->
     <div v-else-if="gameStore.isLoading" class="loading">
       <div class="loading-spinner"></div>
       <p>Chargement...</p>
     </div>
 
+    <!-- 2. Contenu principal -->
     <div v-else-if="gameStore.currentChapter">
       <h2 class="chapter-title">{{ gameStore.currentChapter.title }}</h2>
-      
+
       <div class="chapter-content">
         <p>{{ gameStore.currentChapter.content }}</p>
       </div>
 
+            <!-- Choix disponibles -->
       <div class="choices-container" v-if="gameStore.currentChapter.choices?.length">
-        <button 
-          v-for="choice in gameStore.currentChapter.choices" 
-          :key="choice.id"
-          class="choice-button"
-          :disabled="gameStore.isLoading"
-          @click="handleChoice(choice.next_chapter_id)"
-        >
+        <button v-for="choice in gameStore.currentChapter.choices" :key="choice.id" class="choice-button"
+          :disabled="gameStore.isLoading" @click="handleChoice(choice.next_chapter_id)">
           {{ choice.text }}
         </button>
       </div>
 
+            <!-- Navigation (retour/reset) -->
       <div class="navigation-controls">
-        <button 
-          v-if="gameStore.canGoBack" 
-          @click="gameStore.goBack()"
-          class="nav-button"
-          :disabled="gameStore.isLoading"
-        >
+        <button v-if="gameStore.canGoBack" @click="gameStore.goBack()" class="nav-button"
+          :disabled="gameStore.isLoading">
           Retour au chapitre précédent
         </button>
-        <button 
-          @click="gameStore.resetGame()"
-          class="nav-button reset-button"
-          :disabled="gameStore.isLoading"
-        >
+        <button @click="gameStore.resetGame()" class="nav-button reset-button" :disabled="gameStore.isLoading">
           Recommencer l'histoire
         </button>
       </div>
     </div>
 
+    <!-- 3. Écran de démarrage -->
     <div v-else class="start-screen">
       <h1>L'Étudiant Face à son Destin</h1>
-      <button 
-        @click="gameStore.startGame()"
-        class="start-button"
-        :disabled="gameStore.isLoading"
-      >
+      <button @click="gameStore.startGame()" class="start-button" :disabled="gameStore.isLoading">
         Commencer l'aventure
       </button>
     </div>
@@ -62,10 +53,13 @@
 </template>
 
 <script setup>
+// Import du store de jeu
 import { useGameStore } from '@/stores/gameStore'
 
+// Initialisation du store
 const gameStore = useGameStore()
 
+// Gestion des choix
 const handleChoice = async (nextChapterId) => {
   await gameStore.setChapter(nextChapterId)
 }
@@ -91,7 +85,7 @@ const handleChoice = async (nextChapterId) => {
   background-color: #f8f9fa;
   padding: 2rem;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .choices-container {
@@ -223,24 +217,29 @@ const handleChoice = async (nextChapterId) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
   .story-container {
     padding: 15px;
   }
-  
+
   .chapter-title {
     font-size: 1.5em;
   }
-  
+
   .chapter-content {
     font-size: 1em;
     padding: 1rem;
   }
-  
+
   .choice-button {
     padding: 0.8rem;
     font-size: 1em;
@@ -250,4 +249,4 @@ const handleChoice = async (nextChapterId) => {
     font-size: 2em;
   }
 }
-</style> 
+</style>

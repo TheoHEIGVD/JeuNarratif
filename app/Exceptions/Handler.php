@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-class Handler extends Exception
+class Handler extends Exceptions
 {
     public function render($request, Throwable $exception)
     {

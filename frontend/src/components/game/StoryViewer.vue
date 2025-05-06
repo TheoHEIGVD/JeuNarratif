@@ -1,42 +1,42 @@
 <template>
+
+
     <div class="story-viewer">
+
+        <!-- 1. Loading state -->
         <div v-if="loading" class="loading">
             Chargement en cours...
         </div>
-        
+
+        <!-- 2. Error state -->
         <div v-else-if="error" class="error">
             {{ error }}
         </div>
-        
+
+        <!-- 3. Content state -->
         <div v-else-if="currentChapter" class="chapter">
             <h1>{{ currentChapter.title }}</h1>
             <div class="content">
                 {{ currentChapter.content }}
             </div>
-            
+
+            <!-- Liste des choix OU fin de l'histoire -->
             <div v-if="currentChapter.choices && currentChapter.choices.length > 0" class="choices">
-                <button
-                    v-for="choice in currentChapter.choices"
-                    :key="choice.id"
-                    @click="makeChoice(choice.id)"
-                    class="choice-button"
-                >
+                <button v-for="choice in currentChapter.choices" :key="choice.id" @click="makeChoice(choice.id)"
+                    class="choice-button">
                     {{ choice.text }}
                 </button>
             </div>
-            
+
+            <!-- Message de fin + bouton recommencer -->
             <div v-else class="end">
                 <p>Fin de l'histoire</p>
                 <button @click="resetGame" class="reset-button">
                     Recommencer
                 </button>
             </div>
-            
-            <button
-                v-if="canGoBack"
-                @click="goBack"
-                class="back-button"
-            >
+
+            <button v-if="canGoBack" @click="goBack" class="back-button">
                 Retour
             </button>
         </div>
@@ -47,13 +47,16 @@
 import { computed } from 'vue';
 import { useGameStore } from '@/stores/gameStore';
 
+// État du jeu via le store
 const gameStore = useGameStore();
 
+// Computed properties
 const loading = computed(() => gameStore.isLoading);
 const error = computed(() => gameStore.error);
 const currentChapter = computed(() => gameStore.currentChapter);
 const canGoBack = computed(() => gameStore.canGoBack);
 
+// Gestion des choix du joueur
 const makeChoice = async (choiceId) => {
     const choice = currentChapter.value.choices.find(c => c.id === choiceId);
     if (choice && choice.nextChapter) {
@@ -61,6 +64,7 @@ const makeChoice = async (choiceId) => {
     }
 };
 
+// Navigation dans l'histoire
 const goBack = () => {
     gameStore.goBack();
 };
@@ -71,13 +75,16 @@ const resetGame = () => {
 </script>
 
 <style scoped>
+/* Layout principal */
 .story-viewer {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-.loading, .error {
+/* États */
+.loading,
+.error {
     text-align: center;
     padding: 2rem;
     font-size: 1.2rem;
@@ -87,6 +94,7 @@ const resetGame = () => {
     color: #dc3545;
 }
 
+/* Contenu */
 .chapter {
     background: #fff;
     border-radius: 8px;
@@ -112,6 +120,7 @@ h1 {
     margin-bottom: 2rem;
 }
 
+/* Boutons */
 .choice-button {
     padding: 1rem;
     border: none;
@@ -157,4 +166,4 @@ h1 {
 .reset-button:hover {
     background: #27ae60;
 }
-</style> 
+</style>

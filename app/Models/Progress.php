@@ -17,16 +17,19 @@ class Progress extends Model
         'choices_history' => 'array'
     ];
 
+    // Lien avec l'utilisateur
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    // Lien avec l'histoire
     public function story()
     {
         return $this->belongsTo(Story::class);
     }
 
+    // Lien avec le chapitre
     public function chapter()
     {
         return $this->belongsTo(Chapter::class);

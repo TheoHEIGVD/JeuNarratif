@@ -4,14 +4,17 @@ import { useRouter } from 'vue-router'
 import api from '@/services/api'
 
 export const useAuthStore = defineStore('auth', () => {
+    // État réactif
   const router = useRouter()
-  const user = ref(null)
+  const user = ref(null) 
   const token = ref(localStorage.getItem('token'))
   const loading = ref(false)
   const error = ref(null)
 
+    // Computed property
   const isAuthenticated = computed(() => !!token.value)
 
+    // Persistance dans localStorage
   const setToken = (newToken) => {
     token.value = newToken
     if (newToken) {
@@ -25,6 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = userData
   }
 
+  //Login : Connexion utilisateur
   const login = async (credentials) => {
     try {
       loading.value = true
@@ -43,6 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  //Register : Inscription utilisateur
   const register = async (userData) => {
     try {
       loading.value = true
@@ -61,6 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  //Logout : Déconnexion 
   const logout = async () => {
     try {
       loading.value = true

@@ -1,11 +1,15 @@
 <template>
   <nav class="navbar">
+    <!-- Logo et lien vers l'accueil -->
     <div class="navbar-brand">
       <router-link to="/" class="logo">Jeu Narratif</router-link>
     </div>
     
+    <!-- Menu de navigation -->
     <div class="navbar-menu">
+      <!-- Si utilisateur connecté -->
       <template v-if="isAuthenticated">
+        <!-- Affichage du nom et bouton déconnexion -->
         <div class="navbar-item">
           <span class="user-info">Bonjour, {{ user?.name }}</span>
         </div>
@@ -16,7 +20,9 @@
         </div>
       </template>
       
+      <!-- Si utilisateur non connecté -->
       <template v-else>
+        <!-- Liens connexion/inscription -->
         <div class="navbar-item">
           <router-link to="/login" class="nav-link">Se connecter</router-link>
         </div>
@@ -33,13 +39,16 @@ import { computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 
+// Initialisation des stores et router
 const authStore = useAuthStore();
 const router = useRouter();
 
+// Propriétés calculées
 const user = computed(() => authStore.user);
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 const loading = computed(() => authStore.loading);
 
+// Gestion de la déconnexion
 const handleLogout = async () => {
   try {
     await authStore.logout();
@@ -115,4 +124,4 @@ const handleLogout = async () => {
   background-color: #95a5a6;
   cursor: not-allowed;
 }
-</style> 
+</style>
