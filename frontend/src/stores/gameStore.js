@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { storyService } from "@/services/api";
+import api from '@/services/api';
 
 export const useGameStore = defineStore("game", {
     state: () => ({
@@ -11,6 +12,8 @@ export const useGameStore = defineStore("game", {
         error: null,
         chaptersCache: {}, // Cache des chapitres
         progress: null, // Progression de l'utilisateur
+        currentStoryId: null,
+        currentChapterId: null,
     }),
 
     actions: {
@@ -18,6 +21,7 @@ export const useGameStore = defineStore("game", {
             try {
                 this.loading = true;
                 this.error = null;
+                this.currentStoryId = storyId;
 
                 // Récupérer la progression existante si elle existe
                 const progress = await storyService.getProgress();
@@ -32,6 +36,7 @@ export const useGameStore = defineStore("game", {
                         ...chapter,
                         choices,
                     };
+                    this.currentChapterId = existingProgress.chapter_id;
                     this.chaptersCache[chapter.id] = this.currentChapter;
                     this.history = existingProgress.choices_history || [chapter.id];
                     this.progress = existingProgress;
@@ -44,6 +49,7 @@ export const useGameStore = defineStore("game", {
                         ...chapter,
                         choices,
                     };
+                    this.currentChapterId = chapter.id;
                     this.chaptersCache[chapter.id] = this.currentChapter;
                     this.history = [chapter.id];
                     
@@ -60,10 +66,14 @@ export const useGameStore = defineStore("game", {
             }
         },
 
-        async setChapter(chapterId) {
+        async setChapter(chapterId, storyId = null) {
             try {
                 this.loading = true;
                 this.error = null;
+
+                if (storyId) {
+                    this.currentStoryId = storyId;
+                }
 
                 // Vérifier si nous avons déjà le chapitre en cache
                 if (!this.chaptersCache[chapterId]) {
@@ -76,6 +86,7 @@ export const useGameStore = defineStore("game", {
                 }
 
                 this.currentChapter = this.chaptersCache[chapterId];
+                this.currentChapterId = chapterId;
                 this.history.push(chapterId);
 
                 // Mettre à jour la progression
@@ -85,6 +96,23 @@ export const useGameStore = defineStore("game", {
                         chapterId,
                         this.history[this.history.length - 2] // Le choix précédent
                     );
+                } else if (storyId) {
+                    // Vérifier si nous avons déjà une progression
+                    const progressResponse = await api.get('/progress');
+                    const existingProgress = progressResponse.data.find(p => p.story_id === storyId);
+
+                    if (existingProgress) {
+                        // Mettre à jour la progression existante
+                        await api.put(`/progress/${existingProgress.id}`, {
+                            chapter_id: chapterId
+                        });
+                    } else {
+                        // Créer une nouvelle progression
+                        await api.post('/progress', {
+                            story_id: storyId,
+                            chapter_id: chapterId
+                        });
+                    }
                 }
             } catch (error) {
                 this.error = "Impossible de charger le chapitre. Veuillez réessayer.";
@@ -99,18 +127,63 @@ export const useGameStore = defineStore("game", {
                 this.history.pop();
                 const previousChapterId = this.history[this.history.length - 1];
                 this.currentChapter = this.chaptersCache[previousChapterId];
+                this.currentChapterId = previousChapterId;
             }
         },
 
-        resetGame() {
-            this.currentChapter = null;
-            this.currentStory = null;
-            this.history = [];
-            this.gameStarted = false;
-            this.error = null;
-            this.chaptersCache = {};
-            this.progress = null;
-        },
+        async resetGame(storyId = null) {
+            if (storyId || this.currentStoryId) {
+                const targetStoryId = storyId || this.currentStoryId;
+                
+                try {
+                    this.loading = true;
+                    this.error = null;
+
+                    // Récupérer la progression existante
+                    const progressResponse = await api.get('/progress');
+                    const existingProgress = progressResponse.data.find(p => p.story_id === targetStoryId);
+
+                    if (existingProgress) {
+                        // Supprimer la progression actuelle
+                        await api.delete(`/progress/${existingProgress.id}`);
+                    }
+
+                    // Recommencer au premier chapitre
+                    const chaptersResponse = await api.get(`/stories/${targetStoryId}/chapters`);
+                    if (chaptersResponse.data && chaptersResponse.data.length > 0) {
+                        const firstChapter = chaptersResponse.data[0];
+                        
+                        // Créer une nouvelle progression
+                        await api.post('/progress', {
+                            story_id: targetStoryId,
+                            chapter_id: firstChapter.id
+                        });
+
+                        this.currentStoryId = targetStoryId;
+                        this.currentChapterId = firstChapter.id;
+                        
+                        // Recharger le chapitre
+                        await this.setChapter(firstChapter.id, targetStoryId);
+                    }
+                } catch (error) {
+                    this.error = "Impossible de réinitialiser le jeu";
+                    console.error(error);
+                } finally {
+                    this.loading = false;
+                }
+            } else {
+                // Reset complet sans appels API
+                this.currentChapter = null;
+                this.currentStory = null;
+                this.currentStoryId = null;
+                this.currentChapterId = null;
+                this.history = [];
+                this.gameStarted = false;
+                this.error = null;
+                this.chaptersCache = {};
+                this.progress = null;
+            }
+        }
     },
 
     getters: {

@@ -52,7 +52,6 @@ router.beforeEach((to, from, next) => {
     const isAuthenticated = authStore.isAuthenticated;
     // Redirection selon l'état d'authentification
     if (to.meta.requiresAuth && !isAuthenticated) {
-        next("/login");
         next("/login"); // Redirection vers login si non authentifié
     } else if (to.meta.requiresGuest && isAuthenticated) {
         next("/"); // Redirection vers home si déjà connecté
