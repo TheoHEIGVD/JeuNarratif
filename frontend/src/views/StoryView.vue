@@ -87,8 +87,8 @@ const loadChapter = async () => {
 const makeChoice = async (choice) => {
     try {
         loading.value = true;
-        const storyId = route.params.id;
-        await gameStore.setChapter(storyId, choice.next_chapter_id);
+        // Inverser l'ordre : d'abord chapterId, puis storyId
+        await gameStore.setChapter(choice.next_chapter_id, route.params.id);
         await loadChapter();
     } catch (err) {
         error.value = "Impossible de continuer l'histoire";
