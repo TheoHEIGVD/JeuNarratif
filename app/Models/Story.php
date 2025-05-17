@@ -12,6 +12,11 @@ class Story extends Model
     {
         return $this->hasMany(Chapter::class);
     }
+
+    public function getTotalChaptersAttribute()
+    {
+        return $this->chapters()->count();
+    }
 }
 
 

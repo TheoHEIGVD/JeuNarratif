@@ -23,6 +23,16 @@ export const useGameStore = defineStore("game", {
                 this.error = null;
                 this.currentStoryId = storyId;
 
+                // Récupérer l'histoire avec ses chapitres
+                const storyResponse = await api.get(`/stories/${storyId}`);
+                const chaptersResponse = await api.get(`/stories/${storyId}/chapters`);
+                
+                // Définir le nombre total de chapitres
+                this.currentStory = {
+                    ...storyResponse.data,
+                    total_chapters: storyResponse.data.total_chapters
+                };
+
                 // Récupérer la progression existante si elle existe
                 const progress = await storyService.getProgress();
                 const existingProgress = progress.find(p => p.story_id === storyId);
@@ -64,8 +74,8 @@ export const useGameStore = defineStore("game", {
 
                 this.gameStarted = true;
             } catch (error) {
-                this.error = "Impossible de démarrer le jeu. Veuillez réessayer.";
-                console.error("Erreur lors du démarrage du jeu:", error);
+                this.error = "Impossible de démarrer le jeu";
+                console.error(error);
             } finally {
                 this.loading = false;
             }
@@ -120,8 +130,8 @@ export const useGameStore = defineStore("game", {
                     }
                 }
             } catch (error) {
-                this.error = "Impossible de charger le chapitre. Veuillez réessayer.";
-                console.error("Erreur lors du chargement du chapitre:", error);
+                this.error = "Impossible de charger le chapitre";
+                console.error(error);
             } finally {
                 this.loading = false;
             }
@@ -196,6 +206,16 @@ export const useGameStore = defineStore("game", {
         isLoading: (state) => state.loading,
         hasError: (state) => state.error !== null,
         currentProgress: (state) => state.progress,
+        progressPercentage: (state) => {
+            if (!state.currentChapter?.chapter_number || !state.currentStory?.total_chapters) return 0;
+            
+            // Si c'est un chapitre final (sans choix), on considère que c'est 100%
+            if (!state.currentChapter.choices || state.currentChapter.choices.length === 0) {
+                return 100;
+            }
+            
+            // Sinon, on calcule le pourcentage normalement
+            return (state.currentChapter.chapter_number / state.currentStory.total_chapters) * 100;
+        }
     }
 });
- 

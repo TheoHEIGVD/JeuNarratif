@@ -2,6 +2,13 @@
 
   <!-- Container principal -->
   <div class="story-container">
+    <!-- Ajouter la barre de progression -->
+    <div class="progress-bar-container">
+      <div 
+        class="progress-bar" 
+        :style="{ width: `${gameStore.progressPercentage}%` }"
+      ></div>
+    </div>
     <!-- 1. Gestion des états -->
     <!-- Affichage des erreurs -->
     <div v-if="gameStore.hasError" class="error-message">
@@ -248,5 +255,21 @@ const handleChoice = async (nextChapterId) => {
   .start-screen h1 {
     font-size: 2em;
   }
+}
+
+/* Ajouter les styles CSS */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4299e1;
+  transition: width 0.3s ease;
 }
 </style>

@@ -1,5 +1,12 @@
 <template>
     <div class="story-view">
+        <div class="progress-bar-container">
+            <div 
+                class="progress-bar" 
+                :style="{ width: `${gameStore.progressPercentage}%` }"
+            ></div>
+        </div>
+
         <div v-if="loading" class="loading">
             Chargement de l'histoire...
         </div>
@@ -200,5 +207,20 @@ h1 {
 
 .back-button:hover {
     background: #7f8c8d;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: #e2e8f0;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #4299e1;
+    transition: width 0.3s ease;
 }
 </style> 

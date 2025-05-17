@@ -32,7 +32,16 @@ class StoryController extends Controller
      */
     public function show(string $id)
     {
-        $story = Story::with('chapters')->findOrFail($id);
+        $story = Story::with(['chapters' => function($query) {
+            $query->orderBy('chapter_number', 'asc');
+        }])->findOrFail($id);
+        
+        // Trouver le numéro de chapitre le plus élevé
+        $maxChapterNumber = $story->chapters->max('chapter_number');
+        
+        // Ajouter 1 pour inclure le chapitre final
+        $story->total_chapters = $maxChapterNumber + 1;
+        
         return response()->json($story);
     }
 
